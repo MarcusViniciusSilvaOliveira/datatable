@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Datatable from './components/datatable';
+import Datatable from './datatable';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
