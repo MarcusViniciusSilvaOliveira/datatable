@@ -4,17 +4,16 @@ import { useState, useRef } from 'react';
 import { reOrderColumns, GetColumnIndex, AmIBeingDraggin } from '../../helpers/tableFuncions';
 
 const TableContainer = (props) => {
-    console.log("teste");
-
     const [columns, setColumns] = useState(props.columns);
-    const [,forceUpdate] = useState(0);
+    const [, forceUpdate] = useState(0);
     let originColumnDragged = useRef(null);
     let startBeingDragged = useRef(false);
     let canSwitchColumns = false;
     let targetColumnDroped = null;
 
-    const dataOrdered = props.data.sort((a, b) => a[props.orderColumn] < b[props.orderColumn] ? -1 : 1);
-   
+    const dataOrdered = props.data.sort((a, b) => a[props.orderColumn] < b[props.orderColumn] ? -1 : 1)
+        .slice(props.paginatorConfig.startIndexSliceData(), props.paginatorConfig.endIndexSliceData());
+
     const onDrop = () => {
         startBeingDragged.current = false;
         //Force Rerender
@@ -46,29 +45,29 @@ const TableContainer = (props) => {
                 <tr onMouseOut={onDrop}>
                     {columns.map((colum, index) => {
                         if (colum.visible)
-                            return <ThStyled key={index}
+                            return <ThStyled key={`column_${index}`}
                                 id={`dataColumn_${index}`}
                                 beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataColumn_${index}`, originColumnDragged.current)}
                                 draggable={true}
                                 onDrop={onDrop}
                                 onDragStart={onDragStart}
                                 onDragOver={onDragOver}>{colum.displayed}</ThStyled>
-                        return <></>;
                     })}
                 </tr>
             </thead>
             <tbody>
                 {dataOrdered.map((item, indexItem) => {
-                    return <tr key={indexItem}>
+                    return <tr key={`row_${indexItem}`}>
                         {columns.map((colum, indexColum) => {
                             if (colum.visible)
                                 return <TdStyled
                                     key={`${indexColum}_${indexItem}`}
                                     id={`dataRow_${indexColum}_${indexItem}`}
                                     beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataRow_${indexColum}_${indexItem}`, originColumnDragged.current)}>
-                                    {item[colum.field]}
+                                    {
+                                        item[colum.field] === true ? "Sim" : (item[colum.field] === false ? "Não" : item[colum.field])
+                                    }
                                 </TdStyled>
-                            return <></>
                         })}
                     </tr>
                 })}

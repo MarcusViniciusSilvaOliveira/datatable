@@ -9,7 +9,7 @@ function App() {
   useEffect(() => {
 
     const fetchData = async () => {
-      const data = await fetch('https://jsonplaceholder.typicode.com/users');
+      const data = await fetch('https://jsonplaceholder.typicode.com/todos');
       const json = await data.json();
       setArray(json);
     }
@@ -19,35 +19,24 @@ function App() {
 
   const columns = [
     {
-      displayed: 'Nome',
-      field: 'name',
-      visible: true,
-      width: 100
+      displayed: 'Finalizado',
+      field: 'completed',
     },
     {
-      displayed: 'Username',
-      field: 'username',
-      visible: true,
-      width: 100
+      displayed: 'Título',
+      field: 'title',
     },
     {
-      displayed: 'E-mail',
-      field: 'email',
-      visible: true,
-      width: 100
+      displayed: 'Código',
+      field: 'id',
     },
-    {
-      displayed: 'Number',
-      field: 'phone',
-      visible: true,
-      width: 100
-    },
-    {
-      displayed: 'Site',
-      field: 'website',
-      visible: true,
-      width: 100
-    },
+  ]
+
+  const rowsPerPage = [
+    5,
+    10,
+    15,
+    20
   ]
 
   return (
@@ -57,6 +46,7 @@ function App() {
           data={array}
           columns={columns}
           orderColumn='username'
+          rowsPerPage={rowsPerPage}
         />
       </header>
     </div>

@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Table from 'react-bootstrap/Table';
 
 export const TableStyled = styled(Table)`
-    width: 70%
+    margin-top: 1rem;
 `;
 
 export const ThStyled = styled.th`
