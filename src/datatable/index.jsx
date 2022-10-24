@@ -11,10 +11,29 @@ import ColumnsConfiguration from "./components/columnsConfiguration";
 import { CardStyled } from './styles'
 import Paginator from "./components/paginator";
 import SelectRowsPerPage from "./components/selectRowsPerPage";
-const Datatable = (props) => {
 
+const Datatable = (props) => {
+    // TODO: Just for checking rendering performance
+    // TODO: Remove after
+    console.log("RenderDataTable")
     const initializeColumnsVisible = () => {
-        return props.columns.map((colum) => { return { ...colum, visible: true } })
+        if (props.actions && props.actions.length > 0) {
+            props.columns.push(
+                {
+                    displayed: 'Actions',
+                    configurable: false,
+                    visible: false
+                }
+            )
+        }
+        
+        return props.columns.map((colum) => {
+            return {
+                ...colum,
+                configurable: colum.configurable == null ? true : false,
+                visible: colum.visible == null ? true : false
+            }
+        })
     }
 
     const [orderColumnName, setOrderColumName] = useState(props.orderColumn)
@@ -22,15 +41,15 @@ const Datatable = (props) => {
     const [paginatorConfig, setPaginatorConfig] = useState({
         rowsPerPage: props.rowsPerPage[0],
         page: 1,
-        startIndexSliceData() { 
+        startIndexSliceData() {
             return (this.page - 1) * this.rowsPerPage
         },
-        endIndexSliceData() { 
+        endIndexSliceData() {
             return this.rowsPerPage * this.page
         }
     });
 
-    const columns = columnsConfig.sort((a, b) => a.visible || true ? -1 : 1) || [];
+    const columns = columnsConfig || [];
     return (
         <CardStyled body>
             <Form as={Row}>
@@ -38,29 +57,30 @@ const Datatable = (props) => {
                     <SelectOrderColumn
                         title='Ordenação'
                         columns={columns}
-                        onSelectNewColumn={setOrderColumName}/>
+                        onSelectNewColumn={setOrderColumName} />
                 </Col>
                 <Col sm={3}>
                     <ColumnsConfiguration
                         columns={columns}
-                        changeColumnsVisible={setcolumnsConfig}/>
+                        changeColumnsVisible={setcolumnsConfig} />
                 </Col>
                 <Col sm={3}>
                     <SelectRowsPerPage
                         title='Registros por Página'
                         rowsPerPage={props.rowsPerPage}
-                        paginatorConfig={{paginatorConfig,  setPaginatorConfig}}/>
+                        dataCount={props.data.length}
+                        paginatorConfig={{ paginatorConfig, setPaginatorConfig }} />
                 </Col>
             </Form>
             <TableContainer
                 data={props.data}
                 columns={columns}
                 orderColumn={orderColumnName}
-                paginatorConfig={paginatorConfig}/>
+                paginatorConfig={paginatorConfig} />
             <Paginator
                 dataCount={props.data.length}
                 config={paginatorConfig}
-                changeConfig={setPaginatorConfig}/>
+                changeConfig={setPaginatorConfig} />
         </CardStyled>
     )
 }

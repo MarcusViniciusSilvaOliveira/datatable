@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Datatable from './datatable';
+import {ReactComponent as ReactLogo} from 'bootstrap-icons/icons/bell-fill.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -39,13 +40,26 @@ function App() {
     20
   ]
 
+  const actions = [
+    {
+      icon: () => <ReactLogo />,
+      title: 'teste',
+      action: () => { console.log("Clicou") }
+    }
+  ]
+
+  if(array.length === 0)
+    return <div></div>
+
   return (
     <div>
+      <ReactLogo />
       <header className='App-header'>
         <Datatable
           data={array}
           columns={columns}
           orderColumn='username'
+          actions={actions}
           rowsPerPage={rowsPerPage}
         />
       </header>

@@ -1,14 +1,7 @@
-import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
 
 const ColumnsConfiguration = (props) => {
-    const [columns, setColumns] = useState(props.columns);
-
-    const submit = (e) => {
-        e.preventDefault();
-        props.changeColumnsVisible(columns);
-    }
+    const columns = props.columns;
 
     const handle = (e) => {
         const newColumns = columns.map(column => {
@@ -16,13 +9,12 @@ const ColumnsConfiguration = (props) => {
                 column.visible = e.target.checked;
             return column
         })
-
-        setColumns(newColumns);
+        props.changeColumnsVisible(newColumns);
     }
 
     return (
         <div className="mb-3">
-            {columns.map((column, index) => {
+            {columns.filter(column => column.configurable).map((column, index) => {
                 return (
                     <Form.Check
                         key={`columnConfig_${index}`}
@@ -34,9 +26,6 @@ const ColumnsConfiguration = (props) => {
                     />
                 )
             })}
-            <Button variant="primary" onClick={submit}>
-                Save
-            </Button>
         </div>
     )
 }

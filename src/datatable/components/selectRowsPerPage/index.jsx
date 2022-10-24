@@ -3,8 +3,9 @@ import Form from 'react-bootstrap/Form';
 const SelectRowsPerPage = (props) => {
     const handle = (e) => {
         props.paginatorConfig.setPaginatorConfig(state => {
+            const maxPage = Math.ceil(props.dataCount / e.target.value);
             return {
-                ...state, rowsPerPage: e.target.value
+                ...state, rowsPerPage: e.target.value, page: maxPage < state.page ? maxPage : state.page
             }
         });
     }

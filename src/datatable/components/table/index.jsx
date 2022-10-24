@@ -5,6 +5,7 @@ import { reOrderColumns, GetColumnIndex, AmIBeingDraggin } from '../../helpers/t
 
 const TableContainer = (props) => {
     const [columns, setColumns] = useState(props.columns);
+
     const [, forceUpdate] = useState(0);
     let originColumnDragged = useRef(null);
     let startBeingDragged = useRef(false);
@@ -15,6 +16,8 @@ const TableContainer = (props) => {
         .slice(props.paginatorConfig.startIndexSliceData(), props.paginatorConfig.endIndexSliceData());
 
     const onDrop = () => {
+        if (!startBeingDragged.current)
+            return;
         startBeingDragged.current = false;
         //Force Rerender
         forceUpdate(state => state + 1);
@@ -43,31 +46,29 @@ const TableContainer = (props) => {
         <TableStyled striped bordered hover>
             <thead>
                 <tr onMouseOut={onDrop}>
-                    {columns.map((colum, index) => {
-                        if (colum.visible)
-                            return <ThStyled key={`column_${index}`}
-                                id={`dataColumn_${index}`}
-                                beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataColumn_${index}`, originColumnDragged.current)}
-                                draggable={true}
-                                onDrop={onDrop}
-                                onDragStart={onDragStart}
-                                onDragOver={onDragOver}>{colum.displayed}</ThStyled>
+                    {columns.filter(column => column.visible || !column.configurable).map((colum, index) => {
+                        return <ThStyled key={`column_${index}`}
+                            id={`dataColumn_${index}`}
+                            beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataColumn_${index}`, originColumnDragged.current)}
+                            draggable={true}
+                            onDrop={colum.configurable ? onDrop : null}
+                            onDragStart={colum.configurable ? onDragStart : null}
+                            onDragOver={colum.configurable ? onDragOver : null}>{colum.displayed}</ThStyled>
                     })}
                 </tr>
             </thead>
             <tbody>
                 {dataOrdered.map((item, indexItem) => {
                     return <tr key={`row_${indexItem}`}>
-                        {columns.map((colum, indexColum) => {
-                            if (colum.visible)
-                                return <TdStyled
-                                    key={`${indexColum}_${indexItem}`}
-                                    id={`dataRow_${indexColum}_${indexItem}`}
-                                    beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataRow_${indexColum}_${indexItem}`, originColumnDragged.current)}>
-                                    {
-                                        item[colum.field] === true ? "Sim" : (item[colum.field] === false ? "Não" : item[colum.field])
-                                    }
-                                </TdStyled>
+                        {columns.filter(column => column.visible || !column.configurable).map((colum, indexColum) => {
+                            return <TdStyled
+                                key={`${indexColum}_${indexItem}`}
+                                id={`dataRow_${indexColum}_${indexItem}`}
+                                beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataRow_${indexColum}_${indexItem}`, originColumnDragged.current)}>
+                                {
+                                    item[colum.field] === true ? "Sim" : (item[colum.field] === false ? "Não" : item[colum.field])
+                                }
+                            </TdStyled>
                         })}
                     </tr>
                 })}
