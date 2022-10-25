@@ -6,10 +6,10 @@ const SelectOrderColumn = (props) => {
     }
 
     return (
-        <Form.Group className="mb-3" controlId="formGroupEmail">
+        <Form.Group className="mb-3">
             <Form.Label>{props.title}</Form.Label>
             <Form.Select onChange={handle}>
-                {props.columns.filter(column => column.configurable).map((column, index) => {
+                {props.columns.filter(column => column.notAction).map((column, index) => {
                     return <option
                         key={`selectColumnOrder_${index}`}
                         value={column.field}>

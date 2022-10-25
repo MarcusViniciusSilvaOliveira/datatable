@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Datatable from './datatable';
-import {ReactComponent as ReactLogo} from 'bootstrap-icons/icons/bell-fill.svg';
+import {ReactComponent as Check} from 'bootstrap-icons/icons/check-square-fill.svg';
+import {ReactComponent as Refuse} from 'bootstrap-icons/icons/x-square-fill.svg';
+import {ReactComponent as Trash} from 'bootstrap-icons/icons/trash-fill.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
@@ -42,9 +44,19 @@ function App() {
 
   const actions = [
     {
-      icon: () => <ReactLogo />,
-      title: 'teste',
-      action: () => { console.log("Clicou") }
+      icon: () => <Check />,
+      title: 'Approve',
+      callBackFn: (item) => { alert(`You are about to approve this item: ${item.title}`) }
+    },
+    {
+      icon: () => <Refuse />,
+      title: 'Refuse',
+      callBackFn: (item) => { alert(`You are about to refuse this item: ${item.title}`) }
+    },
+    {
+      icon: () => <Trash />,
+      title: 'Remove',
+      callBackFn: (item) => { alert(`You are about to remove this item: ${item.title}`) }
     }
   ]
 
@@ -53,13 +65,12 @@ function App() {
 
   return (
     <div>
-      <ReactLogo />
       <header className='App-header'>
         <Datatable
           data={array}
           columns={columns}
           orderColumn='username'
-          actions={actions}
+          actions={{actions, title: 'Actions'}}
           rowsPerPage={rowsPerPage}
         />
       </header>

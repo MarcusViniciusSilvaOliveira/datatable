@@ -11,7 +11,7 @@ const SelectRowsPerPage = (props) => {
     }
 
     return (
-        <Form.Group className="mb-3" controlId="formGroupEmail">
+        <Form.Group className="mb-3">
             <Form.Label>{props.title}</Form.Label>
             <Form.Select onChange={handle}>
                 {props.rowsPerPage.map((number, index) => {

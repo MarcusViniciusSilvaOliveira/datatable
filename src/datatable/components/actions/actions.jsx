@@ -1,8 +1,10 @@
-const Action = () => {
+import { ColStyled } from './styles';
+
+const Action = ({ action, item }) => {
     return (
-        <div>
-            
-        </div>
+        <ColStyled title={action.title} onClick={() => action.callBackFn(item)}>
+            {action.icon()}
+        </ColStyled>
     )
 }
 

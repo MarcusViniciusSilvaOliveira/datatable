@@ -3,6 +3,8 @@ import { useState, useRef } from 'react';
 
 import { reOrderColumns, GetColumnIndex, AmIBeingDraggin } from '../../helpers/tableFuncions';
 
+import ActionCard from '../actions/index';
+
 const TableContainer = (props) => {
     const [columns, setColumns] = useState(props.columns);
 
@@ -46,27 +48,31 @@ const TableContainer = (props) => {
         <TableStyled striped bordered hover>
             <thead>
                 <tr onMouseOut={onDrop}>
-                    {columns.filter(column => column.visible || !column.configurable).map((colum, index) => {
+                    {columns.filter(column => column.visible || !column.notAction).map((colum, index) => {
                         return <ThStyled key={`column_${index}`}
                             id={`dataColumn_${index}`}
                             beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataColumn_${index}`, originColumnDragged.current)}
                             draggable={true}
-                            onDrop={colum.configurable ? onDrop : null}
-                            onDragStart={colum.configurable ? onDragStart : null}
-                            onDragOver={colum.configurable ? onDragOver : null}>{colum.displayed}</ThStyled>
+                            onDrop={colum.notAction ? onDrop : null}
+                            onDragStart={colum.notAction ? onDragStart : null}
+                            onDragOver={colum.notAction ? onDragOver : null}>{colum.displayed}</ThStyled>
                     })}
                 </tr>
             </thead>
             <tbody>
                 {dataOrdered.map((item, indexItem) => {
                     return <tr key={`row_${indexItem}`}>
-                        {columns.filter(column => column.visible || !column.configurable).map((colum, indexColum) => {
+                        {columns.filter(column => column.visible || !column.notAction).map((column, indexColum) => {
+                            if (!column.notAction)
+                                return <TdStyled key={`dataRow_${indexColum}_${indexItem}`}>
+                                    <ActionCard actions={props.actions} keyIndex={`${indexColum}_${indexItem}`} item={item}/>
+                                </TdStyled>
                             return <TdStyled
                                 key={`${indexColum}_${indexItem}`}
                                 id={`dataRow_${indexColum}_${indexItem}`}
                                 beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataRow_${indexColum}_${indexItem}`, originColumnDragged.current)}>
                                 {
-                                    item[colum.field] === true ? "Sim" : (item[colum.field] === false ? "Não" : item[colum.field])
+                                    item[column.field] === true ? "Sim" : (item[column.field] === false ? "Não" : item[column.field])
                                 }
                             </TdStyled>
                         })}
