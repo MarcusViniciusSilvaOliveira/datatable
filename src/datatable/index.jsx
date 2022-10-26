@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -30,17 +30,17 @@ const Datatable = (props) => {
             )
         }
 
-        return props.columns.map((colum) => {
+        return props.columns.map((column) => {
             return {
-                ...colum,
-                notAction: colum.notAction == null ? true : false,
-                visible: colum.visible == null ? true : false
+                ...column,
+                notAction: column.notAction == null ? true : false,
+                visible: column.visible == null ? true : false
             }
         })
     }
 
     const [showConfigPanel, setShowConfigPanel] = useState(false);
-    const [orderColumnName, setOrderColumName] = useState(props.orderColumn)
+    const [orderColumnName, setOrderColumName] = useState('')
     const [columnsConfig, setcolumnsConfig] = useState(initializeColumnsVisible())
     const [paginatorConfig, setPaginatorConfig] = useState({
         rowsPerPage: props.rowsPerPage[0],
@@ -54,39 +54,51 @@ const Datatable = (props) => {
     });
 
     const columns = columnsConfig || [];
+
+    const TableContainerJsx = useMemo(() => {
+        return <TableContainer
+            data={props.data}
+            columns={columns}
+            actions={props.actions.actions}
+            orderColumn={orderColumnName}
+            onCopyClipboard={props.onCopied}
+            paginatorConfig={paginatorConfig}
+            copyable={props.copyable} />
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [props.data, columns, orderColumnName, paginatorConfig]);
+
+    const ConfigPanelJSX = () => {
+        return <Form as={Row} hidden={!showConfigPanel}>
+            <Col sm={3}>
+                <SelectOrderColumn
+                    title='Order'
+                    columns={columns}
+                    onSelectNewColumn={setOrderColumName} />
+            </Col>
+            <Col sm={3}>
+                <SelectRowsPerPage
+                    title='Rows per Page'
+                    rowsPerPage={props.rowsPerPage}
+                    dataCount={props.data.length}
+                    paginatorConfig={{ paginatorConfig, setPaginatorConfig }} />
+            </Col>
+            <Col sm={3}></Col>
+            <Col sm={3}>
+                <ColumnsConfiguration
+                    columns={columns}
+                    changeColumnsVisible={setcolumnsConfig} />
+            </Col>
+        </Form>
+    }
+
     return (
-        <CardStyled body>
-            <Form as={Row} hidden={!showConfigPanel}>
-                <Col sm={3}>
-                    <SelectOrderColumn
-                        title='Order'
-                        columns={columns}
-                        onSelectNewColumn={setOrderColumName} />
-                </Col>
-                <Col sm={3}>
-                    <SelectRowsPerPage
-                        title='Rows per Page'
-                        rowsPerPage={props.rowsPerPage}
-                        dataCount={props.data.length}
-                        paginatorConfig={{ paginatorConfig, setPaginatorConfig }} />
-                </Col>
-                <Col sm={3}></Col>
-                <Col sm={3}>
-                    <ColumnsConfiguration
-                        columns={columns}
-                        changeColumnsVisible={setcolumnsConfig} />
-                </Col>
-            </Form>
+        <CardStyled body width={props.tableWidth}>
+            {ConfigPanelJSX()}
             <ToggleDivStyled>
-                <ToggleOn hidden={!showConfigPanel} onClick={() => setShowConfigPanel(state => !state)}/>
-                <ToggleOff hidden={showConfigPanel} onClick={() => setShowConfigPanel(state => !state)}/>
+                <ToggleOn hidden={!showConfigPanel} onClick={() => setShowConfigPanel(state => !state)} />
+                <ToggleOff hidden={showConfigPanel} onClick={() => setShowConfigPanel(state => !state)} />
             </ToggleDivStyled>
-            <TableContainer
-                data={props.data}
-                columns={columns}
-                actions={props.actions.actions}
-                orderColumn={orderColumnName}
-                paginatorConfig={paginatorConfig} />
+            {TableContainerJsx}
             <Paginator
                 dataCount={props.data.length}
                 config={paginatorConfig}

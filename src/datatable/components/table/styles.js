@@ -7,8 +7,10 @@ export const TableStyled = styled(Table)`
 
 export const ThStyled = styled.th`
     background-color: ${({beingDraggin}) => beingDraggin ? `#84a4d1  !important` : `white !important`};
+    width: ${props => props.width + "%" || "auto"};
 `;
 
 export const TdStyled = styled.td`
     background-color: ${({beingDraggin}) => beingDraggin ? `#84a4d1  !important` : `white !important`};
+    width: ${props => props.width + "%" || "auto"};
 `;

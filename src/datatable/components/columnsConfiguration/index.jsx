@@ -10,7 +10,7 @@ const ColumnsConfiguration = (props) => {
 
     const handle = (e) => {
         const newColumns = columns.map(column => {
-            if (column.field === e.target.value)
+            if (column.displayed === e.target.value)
                 column.visible = e.target.checked;
             return column
         })
@@ -25,7 +25,7 @@ const ColumnsConfiguration = (props) => {
                     checked={column.visible}
                     type={'checkbox'}
                     label={column.displayed}
-                    value={column.field}
+                    value={column.displayed}
                     onChange={handle}
                 />
             )

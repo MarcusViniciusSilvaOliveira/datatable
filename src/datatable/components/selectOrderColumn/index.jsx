@@ -9,10 +9,11 @@ const SelectOrderColumn = (props) => {
         <Form.Group className="mb-3">
             <Form.Label>{props.title}</Form.Label>
             <Form.Select onChange={handle}>
+                    <option>Unordered</option>
                 {props.columns.filter(column => column.notAction).map((column, index) => {
                     return <option
                         key={`selectColumnOrder_${index}`}
-                        value={column.field}>
+                        value={column.displayed}>
                         {column.displayed}
                     </option>
                 })}

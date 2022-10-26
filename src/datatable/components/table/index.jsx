@@ -1,21 +1,27 @@
 import { TableStyled, ThStyled, TdStyled } from './styles';
 import { useState, useRef } from 'react';
 
-import { reOrderColumns, GetColumnIndex, AmIBeingDraggin } from '../../helpers/tableFuncions';
+import {
+    reOrderColumns,
+    GetColumnIndex,
+    AmIBeingDraggin,
+    CheckColumnsWidth,
+    renderRowField,
+    orderDataByColumnSelect
+} from '../../helpers/tableFuncions';
 
 import ActionCard from '../actions/index';
 
 const TableContainer = (props) => {
     const [columns, setColumns] = useState(props.columns);
-
+    
     const [, forceUpdate] = useState(0);
     let originColumnDragged = useRef(null);
     let startBeingDragged = useRef(false);
     let canSwitchColumns = false;
     let targetColumnDroped = null;
 
-    const dataOrdered = props.data.sort((a, b) => a[props.orderColumn] < b[props.orderColumn] ? -1 : 1)
-        .slice(props.paginatorConfig.startIndexSliceData(), props.paginatorConfig.endIndexSliceData());
+    const dataOrdered = orderDataByColumnSelect(props.data, columns, props.orderColumn).slice(props.paginatorConfig.startIndexSliceData(), props.paginatorConfig.endIndexSliceData());
 
     const onDrop = () => {
         if (!startBeingDragged.current)
@@ -44,35 +50,47 @@ const TableContainer = (props) => {
         }
     }
 
+    const copyToClipboard = (e) => {
+        e.preventDefault();
+        const textElement = document.getElementById(e.target.id);
+        navigator.clipboard.writeText(textElement.innerHTML);
+
+        props.onCopyClipboard(textElement.innerHTML);
+    }
+
+    window.onclick = function (e) {
+      }
     return (
         <TableStyled striped bordered hover>
             <thead>
                 <tr onMouseOut={onDrop}>
-                    {columns.filter(column => column.visible || !column.notAction).map((colum, index) => {
+                    {CheckColumnsWidth(columns).filter(column => column.visible || !column.notAction).map((column, index) => {
                         return <ThStyled key={`column_${index}`}
+                            width={column.width}
                             id={`dataColumn_${index}`}
                             beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataColumn_${index}`, originColumnDragged.current)}
                             draggable={true}
-                            onDrop={colum.notAction ? onDrop : null}
-                            onDragStart={colum.notAction ? onDragStart : null}
-                            onDragOver={colum.notAction ? onDragOver : null}>{colum.displayed}</ThStyled>
+                            onDrop={column.notAction ? onDrop : null}
+                            onDragStart={column.notAction ? onDragStart : null}
+                            onDragOver={column.notAction ? onDragOver : null}>{column.displayed}</ThStyled>
                     })}
                 </tr>
             </thead>
             <tbody>
                 {dataOrdered.map((item, indexItem) => {
                     return <tr key={`row_${indexItem}`}>
-                        {columns.filter(column => column.visible || !column.notAction).map((column, indexColum) => {
+                        {CheckColumnsWidth(columns).filter(column => column.visible || !column.notAction).map((column, indexColum) => {
                             if (!column.notAction)
                                 return <TdStyled key={`dataRow_${indexColum}_${indexItem}`}>
-                                    <ActionCard actions={props.actions} keyIndex={`${indexColum}_${indexItem}`} item={item}/>
+                                    <ActionCard actions={props.actions} keyIndex={`${indexColum}_${indexItem}`} item={item} />
                                 </TdStyled>
-                            return <TdStyled
+                            return <TdStyled width={column.width}
                                 key={`${indexColum}_${indexItem}`}
                                 id={`dataRow_${indexColum}_${indexItem}`}
+                                onClick={copyToClipboard}
                                 beingDraggin={AmIBeingDraggin(startBeingDragged.current, `dataRow_${indexColum}_${indexItem}`, originColumnDragged.current)}>
                                 {
-                                    item[column.field] === true ? "Sim" : (item[column.field] === false ? "Não" : item[column.field])
+                                    renderRowField(item, column)
                                 }
                             </TdStyled>
                         })}
